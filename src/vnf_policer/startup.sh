@@ -1,7 +1,7 @@
 #!/bin/bash
 
-while ! ip link show pol_vnf-eth0 >/dev/null 2>&1; do sleep 0.05; done
-while ! ip link show pol_vnf-eth1 >/dev/null 2>&1; do sleep 0.05; done
+while ! ip link show pol_vnf-eth0 >/dev/null 2>&1; do sleep 0.1; done
+while ! ip link show pol_vnf-eth1 >/dev/null 2>&1; do sleep 0.1; done
 
 brctl addbr br1
 brctl addif br1 pol_vnf-eth0
