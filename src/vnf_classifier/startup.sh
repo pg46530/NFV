@@ -13,13 +13,13 @@ ip link set br0 up
 
 echo ">>> Bridge was successfully created"
 
-# VOIP (UDP 5060) -> DSCP 46
+# VOIP (UDP 5060) - DSCP 46
 iptables -t mangle -A PREROUTING -p udp --dport 5060 -j DSCP --set-dscp 46
 
-# Video (UDP 5004) -> DSCP 34
+# Video (UDP 5004) - DSCP 34
 iptables -t mangle -A PREROUTING -p udp --dport 5004 -j DSCP --set-dscp 34
 
-# Bulk (TCP 5001) -> DSCP 10
+# Bulk (TCP 5001) - DSCP 10
 iptables -t mangle -A PREROUTING -p tcp --dport 5001 -j DSCP --set-dscp 10
 
 tail -f /dev/null
