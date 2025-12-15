@@ -1,41 +1,46 @@
 from mininet.net import Containernet
 from mininet.node import Controller, Docker
-from mininet.link import TCLink
 from mininet.cli import CLI
 from mininet.log import setLogLevel, info
 
 setLogLevel('info')
 
 net = Containernet(controller=Controller)
-info('*** Adding controller\n')
 net.addController('c0')
 
-info('*** Adding VNFs\n')
-# VNF DSCP
+h1 = net.addHost('h1', ip='10.0.0.1/24')
+h2 = net.addHost('h2', ip='10.0.0.2/24')
+
 dscp_vnf = net.addDocker(
-    'dscp_vnf', 
-    ip='10.0.0.10', 
-    dimage='dscp_vnf', 
-    ports=[],
+    'dscp_vnf',
+    dimage='dscp_vnf',
     dprivileged=True,
-    dcmd="python /classifier.py"
+    cap_add=["NET_ADMIN"],
+    dcmd="/startup.sh"
 )
 
-h1 = net.addHost('h1', ip='10.0.0.1')
-h2 = net.addHost('h2', ip='10.0.0.2')
+pol_vnf = net.addDocker(
+    'pol_vnf',
+    dimage='pol_vnf',
+    dprivileged=True,
+    cap_add=["NET_ADMIN"],
+    dcmd="/startup.sh"
+)
 
-info('*** Creating links\n')
+mon_vnf = net.addDocker(
+    'mon_vnf',
+    dimage='mon_vnf',
+    dprivileged=True,
+    cap_add=["NET_ADMIN"],
+    dcmd="/startup.sh"
+)
 
 net.addLink(h1, dscp_vnf)
-net.addLink(dscp_vnf, h2)
+net.addLink(dscp_vnf, pol_vnf)
+net.addLink(pol_vnf, mon_vnf)
+net.addLink(mon_vnf, h2)
 
-info('*** Starting network\n')
 net.start()
-
-net.pingAll()
-
-info('*** Running CLI\n')
 CLI(net)
 
-info('*** Stopping network\n')
 net.stop()
